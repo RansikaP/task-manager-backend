@@ -11,6 +11,7 @@ const port = process.env.PORT || 3000;
 const task_routes = require('./routes/task');
 const project_routes = require('./routes/project');
 const user_routes = require('./routes/user');
+const db = require('./db');
 
 //Set app to use above modules
 app.use(bodyParser.json()); // support json encoded bodies
