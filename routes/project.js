@@ -133,32 +133,27 @@ router.put('/', async (req, res) => {
 
 router.put('/removeCollaborator', async (req, res) => {
     try {
-        // Connect to MongoDB
+
         await mongoose.connect(process.env.MONGO_URL);
 
-        // Extract data from the request body
         const { creator, name, collaborator } = req.body;
 
-        // Find the project with the same creator and name
         const project = await Project.findOne({ creator, name });
 
-        // If the project exists, remove the collaborator from its collaborators array
         if (project) {
-            // Find the index of the collaborator in the collaborators array
             const collaboratorIndex = project.collaborators.indexOf(collaborator);
-            // If the collaborator exists in the array, remove it
+
             if (collaboratorIndex !== -1) {
                 project.collaborators.splice(collaboratorIndex, 1);
-                // Save the updated project to the database
+
                 const updatedProject = await project.save();
-                // Respond with the updated project
+
                 res.status(200).json(updatedProject);
             } else {
-                // If the collaborator does not exist in the project, respond with an error
                 res.status(404).json({ error: 'Collaborator not found in the project' });
             }
         } else {
-            // If the project does not exist, respond with an error
+
             res.status(404).json({ error: 'Project not found' });
         }
     } catch (error) {
@@ -168,10 +163,10 @@ router.put('/removeCollaborator', async (req, res) => {
     }
 });
 
-router.get('/collabProjects', async (req, res) => {
+router.get('/collabProjects/:id', async (req, res) => {
     try {
         await mongoose.connect(process.env.MONGO_URL);
-        const { id } = req.body;
+        const { id } = req.params;
 
         const projects = await Project.find({collaborators:id}); 
 
@@ -183,10 +178,10 @@ router.get('/collabProjects', async (req, res) => {
     }
 });
 
-router.get('/myProjects', async (req, res) => {
+router.get('/myProjects/:id', async (req, res) => {
     try {
         await mongoose.connect(process.env.MONGO_URL);
-        const { id } = req.body;
+        const { id } = req.params;
 
         const projects = await Project.find({creator:id}); 
 
@@ -197,4 +192,21 @@ router.get('/myProjects', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch user projects' });
     }
 });
+
+
+router.get('/getProj/:id', async (req, res) => {
+    try {
+        await mongoose.connect(process.env.MONGO_URL);
+        const { id } = req.params;
+
+        const projects = await Project.find({_id:id}); 
+
+        res.status(200).json(projects);
+    } catch (error) {
+        // Handle errors
+        console.error('Error fetching user projects:', error);
+        res.status(500).json({ error: 'Failed to fetch user projects' });
+    }
+});
+
 module.exports = router;
