@@ -35,10 +35,11 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.delete('/', async (req, res) => {
+router.delete('/delete/:id', async (req, res) => {
     try {
         await mongoose.connect(process.env.MONGO_URL);
-        const { id } = req.body;
+        
+        const { id } = req.params;
         const query = { _id: id };
 
         const result = await Project.deleteOne(query); // Await the deleteOne() operation
@@ -136,9 +137,11 @@ router.put('/removeCollaborator', async (req, res) => {
 
         await mongoose.connect(process.env.MONGO_URL);
 
-        const { creator, name, collaborator } = req.body;
+        const { id, collaborator } = req.body;
 
-        const project = await Project.findOne({ creator, name });
+        const _id = id
+
+        const project = await Project.findOne({ _id });
 
         if (project) {
             const collaboratorIndex = project.collaborators.indexOf(collaborator);
