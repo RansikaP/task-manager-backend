@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
     }
 })
 
-router.delete('/', async (req, res) => {
+router.delete('/delete/:id', async (req, res) => {
     try {
         await mongoose.connect(process.env.MONGO_URL)
         const { id } = req.body
@@ -141,10 +141,9 @@ router.put('/', async (req, res) => {
 router.put('/removeCollaborator', async (req, res) => {
     try {
         await mongoose.connect(process.env.MONGO_URL)
-
-        const { creator, name, collaborator } = req.body
-
-        const project = await Project.findOne({ creator, name })
+        const { id, collaborator } = req.body;
+        const _id = id
+        const project = await Project.findOne({ _id });
 
         if (project) {
             const collaboratorIndex =
