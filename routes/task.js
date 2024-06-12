@@ -3,7 +3,7 @@ const router = express.Router()
 const TaskModel = require('../schema/task')
 require('dotenv').config()
 
-router.get('/:projectId', async (req, res) => {
+router.get('/getProjectTasks/:projectId', async (req, res) => {
     try {
         const { projectId } = req.params
         const tasks = await TaskModel.find({ projectId: projectId })
@@ -15,10 +15,15 @@ router.get('/:projectId', async (req, res) => {
 })
 
 //need to fix --Akash
-router.get('/:userId', async (req, res) => {
+router.get('/getUserTasks/:user', async (req, res) => {
     try {
-        const { projectId } = req.params
-        const tasks = await TaskModel.find({ projectId: projectId })
+        const { user } = req.params
+        const tasks = await TaskModel.find({
+            $or: [
+                { assignee: user }, // Assignee is user
+                { assignedTo: user }, // User is in the assignedTo array
+            ],
+        })
         res.json(tasks)
     } catch (error) {
         console.error('Error fetching tasks:', error)
@@ -30,7 +35,6 @@ router.post('/', async (req, res) => {
     try {
         const newTask = new TaskModel({ ...req.body })
         const insertedTask = await newTask.save()
-
         return res.status(201).json(insertedTask)
     } catch (error) {
         console.error('Error: ', error)
