@@ -38,7 +38,9 @@ router.post('/', async (req, res) => {
 router.delete('/delete/:id', async (req, res) => {
     try {
         await mongoose.connect(process.env.MONGO_URL)
-        const { id } = req.body
+        const { id } = req.params
+        console.log('here')
+        console.log(id)
         const query = { _id: id }
 
         const result = await Project.deleteOne(query) // Await the deleteOne() operation
