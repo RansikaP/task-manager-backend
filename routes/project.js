@@ -62,15 +62,14 @@ router.delete('/delete/:id', async (req, res) => {
 
 router.put('/addCollaborator', async (req, res) => {
     try {
+        // Connect to MongoDB
+        await mongoose.connect(process.env.MONGO_URL)
+
         // Extract data from the request body
-        const { creator, name, key, collaborator } = req.body
+        const { creator, name, collaborator } = req.body
 
         // Find the project with the same creator and name
-        const project = await Project.findOne({
-            creator: creator,
-            name: name,
-            key: key,
-        })
+        const project = await Project.findOne({ creator, name })
 
         // If the project exists, add the collaborator to its collaborators array
         if (project) {
@@ -139,30 +138,50 @@ router.put('/', async (req, res) => {
     }
 })
 
-router.put('/removeCollaborator', async (req, res) => {
+router.put('/removeCollaborators', async (req, res) => {
     try {
-        await mongoose.connect(process.env.MONGO_URL)
-        const { id, collaborator } = req.body
+        const { id, collaborators } = req.body
         const _id = id
         const project = await Project.findOne({ _id })
 
         if (project) {
-            const collaboratorIndex =
-                project.collaborators.indexOf(collaborator)
+            project.collaborators = project.collaborators.filter(
+                (collaborator) => !collaborators.includes(collaborator)
+            )
 
-            if (collaboratorIndex !== -1) {
-                project.collaborators.splice(collaboratorIndex, 1)
+            const updatedProject = await project.save()
 
-                const updatedProject = await project.save()
-
-                res.status(200).json(updatedProject)
-            } else {
-                res.status(404).json({
-                    error: 'Collaborator not found in the project',
-                })
-            }
+            res.status(200).json(updatedProject)
         } else {
-            res.status(404).json({ error: 'Project not found' })
+            res.status(404).json({
+                error: 'Collaborator not found in the project',
+            })
+        }
+    } catch (error) {
+        // Handle errors
+        console.error('Error removing collaborator:', error)
+        res.status(500).json({ error: 'Failed to remove collaborator' })
+    }
+})
+
+router.put('/removeCollaborator', async (req, res) => {
+    try {
+        const { id, collab } = req.body
+        const _id = id
+        const project = await Project.findOne({ _id })
+
+        if (project) {
+            project.collaborators = project.collaborators.filter(
+                (collaborator) => collaborator !== collab
+            )
+
+            const updatedProject = await project.save()
+
+            res.status(200).json(updatedProject)
+        } else {
+            res.status(404).json({
+                error: 'Project not found',
+            })
         }
     } catch (error) {
         // Handle errors
