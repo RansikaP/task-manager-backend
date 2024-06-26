@@ -36,7 +36,6 @@ router.post('/', async (req, res) => {
 })
 
 router.delete('/delete/:id', async (req, res) => {
-    console.log('here1')
     try {
         await mongoose.connect(process.env.MONGO_URL)
         const { id } = req.params
