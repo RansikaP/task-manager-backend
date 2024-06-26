@@ -135,7 +135,7 @@ router.put("/", async (req, res) => {
   }
 });
 
-router.put("/removeCollaborator", async (req, res) => {
+router.put("/removeCollaborators", async (req, res) => {
   try {
     const { id, collaborators } = req.body;
     const _id = id;
@@ -161,6 +161,36 @@ router.put("/removeCollaborator", async (req, res) => {
   }
 
 });
+
+router.put("/removeCollaborator", async (req, res) => {
+  try {
+    const { id, collab } = req.body;
+    const _id = id;
+    const project = await Project.findOne({ _id });
+
+    if (project) {
+      project.collaborators = project.collaborators.filter(
+        (collaborator) => collaborator !== collab
+      );
+
+      const updatedProject = await project.save();
+
+
+      res.status(200).json(updatedProject);
+    } else {
+      res.status(404).json({
+        error: "Project not found",
+      });
+    }
+  } catch (error) {
+    // Handle errors
+    console.error("Error removing collaborator:", error);
+    res.status(500).json({ error: "Failed to remove collaborator" });
+  }
+});
+
+
+
 
 router.get("/collabProjects/:id", async (req, res) => {
   try {
