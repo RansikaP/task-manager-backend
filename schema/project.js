@@ -1,25 +1,30 @@
-const mongoose = require('mongoose');
-const { Schema, model } = mongoose;
+const mongoose = require('mongoose')
+const { Schema, model } = mongoose
 
-const ProjectSchema = new Schema({
-    name: { 
-        type: String, 
-        required: true 
+const ProjectSchema = new Schema(
+    {
+        name: {
+            type: String,
+            required: true,
+        },
+        creator: {
+            type: String,
+            required: true,
+        },
+        description: {
+            type: String,
+        },
+        collaborators: {
+            type: [{ type: String }],
+        },
+        key: {
+            type: String,
+            required: false,
+        },
     },
-    creator: { 
-        type: String, 
-        required: true
-    },
-    description: { 
-        type: String 
-    },
-    collaborators: {
-        type: [{ type: String }]
-    }
-},
     { collection: 'project-data' }
-);
+)
 
-const ProjectModel = model('Project', ProjectSchema);
+const ProjectModel = model('Project', ProjectSchema)
 
-module.exports = ProjectModel;
+module.exports = ProjectModel

@@ -36,6 +36,7 @@ router.post('/', async (req, res) => {
 })
 
 router.delete('/delete/:id', async (req, res) => {
+    console.log('here1')
     try {
         await mongoose.connect(process.env.MONGO_URL)
         const { id } = req.params
@@ -62,14 +63,15 @@ router.delete('/delete/:id', async (req, res) => {
 
 router.put('/addCollaborator', async (req, res) => {
     try {
-        // Connect to MongoDB
-        await mongoose.connect(process.env.MONGO_URL)
-
         // Extract data from the request body
-        const { creator, name, collaborator } = req.body
+        const { creator, name, key, collaborator } = req.body
 
         // Find the project with the same creator and name
-        const project = await Project.findOne({ creator, name })
+        const project = await Project.findOne({
+            creator: creator,
+            name: name,
+            key: key,
+        })
 
         // If the project exists, add the collaborator to its collaborators array
         if (project) {
