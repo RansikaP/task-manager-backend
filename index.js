@@ -1,7 +1,7 @@
 //import nessecary modules
 const express = require('express')
-var bodyParser = require('body-parser')
-var cors = require('cors')
+const bodyParser = require('body-parser')
+const cors = require('cors')
 const app = express()
 
 //Set port
@@ -16,7 +16,12 @@ const db = require('./db')
 //Set app to use above modules
 app.use(bodyParser.json()) // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: false })) // support encoded bodies
-app.use(cors())
+app.use(
+    cors({
+        credentials: true,
+        origin: 'https://task-manager-frontend-p5c4.onrender.com',
+    })
+)
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
